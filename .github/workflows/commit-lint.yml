@@ -1,0 +1,31 @@
+name: Lint Commit Message
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  commit-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Gitlint
+        run: pip install gitlint
+
+      - name: Run Gitlint
+        run: |
+          # Lint all commits in the PR or the last commit in a Push
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            gitlint --commits origin/${{ github.base_ref }}..HEAD
+          else
+            gitlint
+          fi
