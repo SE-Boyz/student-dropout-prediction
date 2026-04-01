@@ -1,0 +1,25 @@
+name: Deny Direct Push to Main
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  check-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Verify Merge Commit
+        run: |
+          # Check if the latest commit has more than one parent (is a merge commit)
+          PARENTS=$(git show -s --format=%P HEAD | wc -w)
+          if [ "$PARENTS" -lt 2 ]; then
+            echo "Error: Direct pushes to the main branch are not allowed."
+            echo "Please create a Pull Request and merge it instead."
+            exit 1
+          fi
+          echo "Merge commit detected. Push accepted."
