@@ -1,0 +1,21 @@
+# Configuration for gitlint
+[general]
+# Enforce the conventional commit message format
+# https://www.conventionalcommits.org/
+ignore=B6
+verbosity=3
+
+[title-max-length]
+line-length=72
+
+[title-must-not-contain-word]
+# Comma-separated list of words that cannot occur in the title
+words=wip
+
+[title-match-regex]
+# Conventional commits regex: <type>[scope]: <description>
+regex=^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert|refactor)(\([\w \-]+\))?:\s.*$
+
+
+[body-min-length]
+min-length=0
