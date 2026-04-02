@@ -454,10 +454,14 @@ def train_and_evaluate(
 
     predictions = selected_model.predict(X_test)
 
+    # Calculate training accuracy for overfitting assessment
+    train_accuracy = float(selected_model.score(X_train, y_train))
+
     # Collect and save result artifacts
     metrics = evaluate_predictions(y_test, predictions)
     metrics.update(tuning_summary)
     metrics.update(run_cross_validation(selected_model))
+    metrics["Training Accuracy"] = train_accuracy
     metrics["Model"] = model_name
     metrics["Confusion Matrix Figure"] = str(
         save_confusion_matrix(model_name, y_test, predictions)
@@ -473,7 +477,8 @@ def train_and_evaluate(
         [
             {
                 "Algorithm": model_name,
-                "Accuracy": metrics["Accuracy"],
+                "Training Accuracy": train_accuracy,
+                "Accuracy (Test)": metrics["Accuracy"],
                 "Balanced Accuracy": metrics["Balanced Accuracy"],
                 "Weighted F1": metrics["F1-score (weighted)"],
                 "Macro F1": metrics["F1-score (macro)"],
@@ -499,7 +504,8 @@ def create_comparison_table() -> pd.DataFrame:
         rows.append(
             {
                 "Algorithm": payload["Model"],
-                "Accuracy": payload["Accuracy"],
+                "Training Accuracy": payload.get("Training Accuracy", "N/A"),
+                "Accuracy (Test)": payload["Accuracy"],
                 "Balanced Accuracy": payload["Balanced Accuracy"],
                 "Weighted Precision": payload["Precision (weighted)"],
                 "Weighted Recall": payload["Recall (weighted)"],
