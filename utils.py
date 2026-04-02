@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 from pathlib import Path
 
 import joblib
@@ -40,7 +41,14 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 
-matplotlib.use("Agg")
+# Check if we are running in an interactive environment (like a Jupyter notebook)
+# If not, use the 'Agg' backend for script-based figure saving.
+try:
+    if "ipykernel" not in sys.modules:
+        matplotlib.use("Agg")
+except (AttributeError, ImportError):
+    matplotlib.use("Agg")
+
 import matplotlib.pyplot as plt
 
 os.environ.setdefault("LOKY_MAX_CPU_COUNT", "1")
@@ -478,7 +486,7 @@ def train_and_evaluate(
             {
                 "Algorithm": model_name,
                 "Training Accuracy": train_accuracy,
-                "Accuracy (Test)": metrics["Accuracy"],
+                "Accuracy": metrics["Accuracy"],
                 "Balanced Accuracy": metrics["Balanced Accuracy"],
                 "Weighted F1": metrics["F1-score (weighted)"],
                 "Macro F1": metrics["F1-score (macro)"],
@@ -505,7 +513,7 @@ def create_comparison_table() -> pd.DataFrame:
             {
                 "Algorithm": payload["Model"],
                 "Training Accuracy": payload.get("Training Accuracy", "N/A"),
-                "Accuracy (Test)": payload["Accuracy"],
+                "Accuracy": payload["Accuracy"],
                 "Balanced Accuracy": payload["Balanced Accuracy"],
                 "Weighted Precision": payload["Precision (weighted)"],
                 "Weighted Recall": payload["Recall (weighted)"],
